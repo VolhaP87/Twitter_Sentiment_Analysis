@@ -50,7 +50,9 @@ The first step of data cleaning in training set was standardizing case. The typi
 
 Once the data was cleaned up (case standardized and tokenized), some exploratory data analysis was performed. Frequency distribution of top 10 tokens for each category was visualized with the help of a tool from NLTK called FreqDist. It turned out that top 5 words were the same for neutral and positive sentiments. Better visualization of the words with the highest frequency within each category was achieved by using a word cloud, or tag cloud. 
 
-![](Images/positive_sentiment.png)       ![](Images/negative_sentiment.png)      ![](Images/neutral_sentiment.png)
+![](Images/positive.png)
+![](Images/negative.png) 
+![](Images/neutral.png)
 
 To get the tokens out of the text, the TF-IDF algorithm ('Term Frequency-Inverse Document Frequency') was used. It didn't only count the term frequency within each document, but also included how rare the term was. Since the goal of the analysis was to distinguish the content of Tweets from others in corpus, TF-IDF was the most appropriate vectorizer.
 
