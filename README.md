@@ -50,7 +50,7 @@ The first step of data cleaning in training set was standardizing case. The typi
 
 Once the data was cleaned up (case standardized and tokenized), some exploratory data analysis was performed. Frequency distribution of top 10 tokens for each category was visualized with the help of a tool from NLTK called FreqDist. It turned out that top 5 words were the same for neutral and positive sentiments. Better visualization of the words with the highest frequency within each category was achieved by using a word cloud, or tag cloud. 
 
-![](Images/positive.png | width=250)
+<img src= "Images/positive.png" width="200" height="400" />
 ![](Images/negative.png | width=250) 
 ![](Images/neutral.png | width=250)
 
