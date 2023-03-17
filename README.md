@@ -37,6 +37,7 @@ The β parameter is a strictly positive value that is used to describe the relat
 In our scenario, F2-measure of negative tweets was used as an evaluation metric.
 ***
 
+## Part I
 ## Data Preparation and Exploration
 The data was uploaded and analyzed. Since the column containing product information the tweet was directed at, had about 64% of null values, it was excluded from the analysis. The columns with the text review and emotions were renamed to 'text' and 'category' respectively. The categories 'No emotion toward brand or product' and 'I can't tell' were treated as neutral emotions. The distribution of sentiments were plotted.
 
@@ -62,3 +63,51 @@ Since the data was imbalanced, SMOTE (the Synthetic Minority Oversampling Techni
 
 Before building the models, the preprocessing steps as stated above were applied to the test data, so the models performances could be evaluated on unseen data.
 ***
+
+## Data Modeling
+### Multinomial Naive Bayes Model
+Multinomial Naive Bayes is one of the most popular supervised learning classifications that is used for the analysis of the categorical text data. The algorithm is based on the Bayes theorem and calculates the probability of each tag for a given sample and then gives the tag with the highest probability as output.
+
+According to the confusion matrix of the MultinomialNB model false negative values were equal to 70, while false positives values - to 230.  Since the data was imbalanced and the company aimed to minimize the number of false negatives, while false positives were also significant, beta parameter was set to 2. As the company was interested only in the negative class, the f2 score of class 2 was calculated.
+
+The MultinomialNB model’s ability to both capture negative Tweets and be accurate with those Tweets for the negative class specifically was only 44%. The model also correctly identified if a Tweet was negative about 59% of the time.
+
+### Logistic Regression Model
+The LogisticRegression class was configured for multinomial logistic regression by setting the “multi_class” argument to “multinomial” and the “solver” argument to a solver that supported multinomial logistic regression - “lbfgs“.
+
+The number of FNs for the Logistic Regression model constituted 78, while the number of FPs - 140. The Logistic Regression model’s ability to both capture precision and recall for the negative class specifically got a little higher (45)%. The model also correctly identified if a Tweet was negative about 64% of the time. Thus, Logistic Regression performed a little better that MultinomialNB.
+
+#### Tuned Logistic Regression Model ('C': 0, 'max_iter': 100, 'penalty': 'none')
+The Logistic Regression model was tuned to check if it could perform any better. It turned out, that the tuned model with the parameters 'C' equal to 0, 'max_iter' equal to 100, and 'penalty' equal to 'none', performed worse than the baseline model. It had 97 FNs and 60 FPs. Also, the abiliy to capture both precision and recall for the negative class constituted only 38%, while the accuracy of the model decreased to 63%.
+
+#### K-Nearest Neighbors Model
+KNN is a super simple algorithm, which assumes that similar things are in close proximity of each other. So if a datapoint is near to another datapoint, it assumes that they both belong to similar classes. 
+
+The results of the KNN model were not great. It had 80 FNs and 207 FPs. The F score constituted only 40%, meaning that the model could capture precision and recall of the negative class only 40% of the time. The accuracy of the model was only 56%. The model was tuned to check if it could perform better.
+
+#### Tuned K-Nearest Neighbors Model ('metric': 'manhattan', 'n_neighbors': 5, 'weights': 'distance')
+The F score of the Tuned KNN model was the lowest among all the previous models and constituted only 30%. The number of FNs increased to 110 and FPs decreased to 49. The accuracy of the model was equal to 63%.
+
+#### Support Vector Machine Model
+The multiclassification problem was broken down into multiple binary classification problems using 'one-to-one' approach. The idea was to map data points to high dimensional space to gain mutual linear separation between every two classes, or in other words to get a binary classifier per each pair of classes.
+
+Although the accuracy score of the SVM model was the highest (68%), the F score decreased to 27%. The number of FNs constituted 116 and FPs - only 20. Definitely, this model didn't perform well enough. The model was tuned to check if it could perform any better. 
+
+#### Tuned Support Vector Machine Model ('C': 10, 'gamma': 3)
+The tuned SVM model performed even worse. Although the accuracy was 65%, the F score decreased to 21%. The number of FNs increased to 124, while the number of FPs was the lowest among all the models (15).
+
+#### Random Forest Model
+A random forest is an ensemble classifier that estimates based on the combination of different decision trees. Effectively, it fits a number of decision tree classifiers on various subsamples of the dataset. Also, each tree in the forest is built on a random best subset of features. Finally, the act of enabling these trees gives the best subset of features among all the random subsets of features. 
+
+The F score of the Random Forest model was not great at all. It was equal only to 27%. The accuracy of the model constituted 67%. The number of FNs was also high (116), while FPs were only 17 for the negative class. The model was tuned to check if it could perform any better.
+
+#### Tuned Random Forest Model ('criterion': 'entropy', 'max_features': 'log2', 'n_estimators': 150)
+The F score for the negative class of the tuned model was 27% as well, while the accuracy constituted 68%. The number of FNs was equal to 115, while the number of FPs - to 16 only.
+***
+
+### Model Evaluation
+The graph with the F scores of different models was plotted. Since it was more important to correctly label an instance as a negative class, the model that produced a better F score on the negative class was selected. It was found out that the best F score belonged to the Logistic Regression model. The classification report of the mentioned model and the F score for the negative class were generated again.
+
+![](Images/fscore.png)
+
+Based on the report, it was determined that the model correctly identifies if a Tweet will be negative about 64% of the time. The F score value for the negative class of the model is 45%, meaning that the model's balanced ability to both capture negative Tweets (recall) and be accurate with those Tweets (precision) is only 45%. The results were not perfect and neural networks were tried out.
