@@ -21,7 +21,6 @@ Tweeter Home Enterteinment Group asked to analyze Twitter sentiment about Apple 
 ***
 
 ## Data Understanding
-## Data Understanding
 The data for the analysis was taken from CrowdFlower via data.world links. Human raters rated the sentiment in over 9,000 Tweets as positive, negative, or neutral.
 
 The data represented an imbalanced multiclass classification problem. Since the company wanted to learn how customers felt about certain products, both false positives and false negatives were of a cost in the analysis. In the case of a false positive, a positive Tweet would be identified as negative and the company would have to spend resources and time to analyze it. However, in the case of a false negative, the model would identify a negative Tweet as positive, and the company would miss the sentiment of interest and let negativity escalate. Since the class proportion in the analyzed dataset was skewed and both false negatives and false positives were balanced in importance, Fbeta-measure, or the harmonic mean of the precision and recall values, was chosen as an evaluation metric.
@@ -78,37 +77,45 @@ The LogisticRegression class was configured for multinomial logistic regression 
 
 The number of FNs constituted 78, while the number of FP - 140. The Logistic Regression model’s ability to both capture precision and recall got a little higher (57)%. The model also correctly identified a Tweet about 64% of the time. Thus, Logistic Regression performed a little better that MultinomialNB.
 
-#### Tuned Logistic Regression Model ('C': 0, 'max_iter': 100, 'penalty': 'none')
+### Tuned Logistic Regression Model ('C': 0, 'max_iter': 100, 'penalty': 'none')
 The Logistic Regression model was tuned to check if it could perform any better. It turned out, that the tuned model with the parameters 'C' equal to 0, 'max_iter' equal to 100, and 'penalty' equal to 'none', performed worse than the baseline model. It had 97 FNs and 60 FPs. Also, the abiliy to capture both precision and recall constituted only 55%, while the accuracy of the model decreased to 63%.
 
-#### K-Nearest Neighbors Model
+### K-Nearest Neighbors Model
 KNN is a super simple algorithm, which assumes that similar things are in close proximity of each other. So if a datapoint is near to another datapoint, it assumes that they both belong to similar classes. 
 
 The results of the KNN model were not great. It had 80 FNs and 207 FPs. The F score constituted only 48%, meaning that the model could capture precision and recall only 48% of the time. The accuracy of the model was only 56%. The model was tuned to check if it could perform better.
 
-#### Tuned K-Nearest Neighbors Model ('metric': 'manhattan', 'n_neighbors': 5, 'weights': 'distance')
+### Tuned K-Nearest Neighbors Model ('metric': 'manhattan', 'n_neighbors': 5, 'weights': 'distance')
 The F score of the Tuned KNN model constituted 50%. The number of FNs increased to 110 and FPs decreased to 49. The accuracy of the model was equal to 63%.
 
-#### Support Vector Machine Model
+### Support Vector Machine Model
 The multiclassification problem was broken down into multiple binary classification problems using 'one-to-one' approach. The idea was to map data points to high dimensional space to gain mutual linear separation between every two classes, or in other words to get a binary classifier per each pair of classes.
 
 Although the accuracy score of the SVM model was the highest (68%), the F score was equal to 55%. The number of FNs constituted 116 and FPs - only 20. The model was tuned to check if it could perform any better. 
 
-#### Tuned Support Vector Machine Model ('C': 10, 'gamma': 3)
+### Tuned Support Vector Machine Model ('C': 10, 'gamma': 3)
 The tuned SVM model performed even worse. Although the accuracy was 65%, the F score decreased to 48%. The number of FNs increased to 124, while the number of FPs was the lowest among all the models (15).
 
-#### Random Forest Model
+### Random Forest Model
 A random forest is an ensemble classifier that estimates based on the combination of different decision trees. Effectively, it fits a number of decision tree classifiers on various subsamples of the dataset. Also, each tree in the forest is built on a random best subset of features. Finally, the act of enabling these trees gives the best subset of features among all the random subsets of features. 
 
 The F score of the Random Forest model was equal to 55%. The accuracy of the model constituted 67%. The number of FNs was also high (116), while FPs were only 17 for the negative class. The model was tuned to check if it could perform any better.
 
-#### Tuned Random Forest Model ('criterion': 'entropy', 'max_features': 'log2', 'n_estimators': 150)
+### Tuned Random Forest Model ('criterion': 'entropy', 'max_features': 'log2', 'n_estimators': 150)
 The F score of the tuned model was 55% as well, while the accuracy constituted 68%. The number of FNs was equal to 115, while the number of FPs - to 16 only.
+
+### XGBoost Model
+XGBoost is a decision-tree-based ensemble Machine Learning algorithm that uses a gradient boosting framework. When it comes to small-to-medium structured/tabular data, decision tree based algorithms are considered to be best-in-class.
+
+The XGBoost model didn't perform very well. The accuracy of the model was 67%, while the f1 score constituted only 53%. The number of FNs was 115, while FPs - 43. The model was tuned to check if it performed any better.
+
+### Tuned XGBoost Model ('learning_rate': 0.2, 'max_depth': 6, 'min_child_weight': 1, 'n_estimators': 100, 'subsample': 0.7)
+The values of accuracy and f1 score of the tuned XGBoost Model stayed the same and were equal to 67% and 53% respectively. The number of FNs was 114, while the number of FPs - 47.
 ***
 
 ### Model Evaluation
 The graph with the F scores of different models was plotted. Since it was more important to correctly label an instance as a negative class, the model that produced a better F score on the negative class was selected. It was found out that the best F score belonged to the Logistic Regression model. The classification report of the mentioned model and the F score for the negative class were generated again.
 
-![](Images/fscroe.png)
+![](Images/fscore.png)
 
 Based on the report, it was determined that the model correctly identifies a Tweet about 64% of the time. The F score value for the model is 57%, meaning that the model's balanced ability to both capture Tweets (recall) and be accurate with those Tweets (precision) is only 57%. The results were not perfect and neural networks were tried out.
