@@ -13,19 +13,20 @@ Sentiment analysis, also referred to as opinion mining, is an approach that iden
 
 Sentiment analysis is a popular way for organizations to determine and classify opinions about a product, service, or idea. With the help of sentiment analysis companies get a better understanding of how customers feel about their brand, gain insights that help to improve their products and services, make business more responsive to customer feedback, react quickly to negative sentiment and turn it around, monitor brand’s reputation in real-time, and keep customers happy by always putting their feelings first.
 
-This project tends to analyze Twitter sentiment about Apple and Google products in order to detect negative mentions and take remedial actions before they escalate. 
+This project tends to analyze Twitter sentiment about Apple and Google products in order to better understand how people feel about them. 
 ***
 
 ## Business Problem
-Tweeter Home Enterteinment Group asked to analyze Twitter sentiment about Apple and Google products in order to help businesses monitor their brands and understand customers needs. The main purpose of the analysis was to build an NLP model that could rate the sentiment of a Tweet based on its content and detect angry customers or negative mentions, so the company could take remedial actions fast before the negativity escalates.
+Tweeter Home Enterteinment Group asked to analyze Twitter sentiment about Apple and Google products in order to help businesses monitor their brands and understand customers needs. The main purpose of the analysis was to build an NLP model that could rate the sentiment of a Tweet based on its content and give insights to the companies how people feel about their products.
 ***
 
 ## Data Understanding
+## Data Understanding
 The data for the analysis was taken from CrowdFlower via data.world links. Human raters rated the sentiment in over 9,000 Tweets as positive, negative, or neutral.
 
-The data represented an imbalanced multiclass classification problem. Since the company wanted to concentrate on the negative Tweets in order to take remedial actions fast, both false positives and false negatives were of a cost in the analysis. In the case of a false positive, a positive Tweet would be identified as negative and the company would have to spend resources and time to analyze it. However, in the case of a false negative, the model would identify a negative Tweet as positive, and the company would miss the sentiment of interest and let negativity escalate. Since the class proportion in the analyzed dataset was skewed and both false negatives and false positives were balanced in importance, F-measure, or the harmonic mean of the precision and recall values, was chosen as an evaluation metric. However, because in this particular situation false negatives were more important to minimize, while false positives were still significant (for the company it would be better not to miss any negative tweets than spend time on analyzing positives that were identifies as negatives), F-measure with more attention on recall was preferred.
+The data represented an imbalanced multiclass classification problem. Since the company wanted to learn how customers felt about certain products, both false positives and false negatives were of a cost in the analysis. In the case of a false positive, a positive Tweet would be identified as negative and the company would have to spend resources and time to analyze it. However, in the case of a false negative, the model would identify a negative Tweet as positive, and the company would miss the sentiment of interest and let negativity escalate. Since the class proportion in the analyzed dataset was skewed and both false negatives and false positives were balanced in importance, Fbeta-measure, or the harmonic mean of the precision and recall values, was chosen as an evaluation metric.
 
-The solution for this problem was found by using the Fbeta-measure. The Fbeta-measure is an abstraction of the F-measure where the balance of precision and recall in the calculation of the harmonic mean is controlled by a coefficient called beta:
+The Fbeta-measure is a measure where the balance of precision and recall in the calculation of the harmonic mean is controlled by a coefficient called beta: 
 ![](Images/formula.png)
 
 The β parameter is a strictly positive value that is used to describe the relative importance of recall to precision. A larger β value puts a higher emphasis on recall, while a smaller value puts a higher emphasis on precision. Three common values for the beta parameter are as follows:
@@ -34,7 +35,7 @@ The β parameter is a strictly positive value that is used to describe the relat
 * F1-Measure (beta=1.0): Balance the weight on precision and recall.
 * F2-Measure (beta=2.0): Less weight on precision, more weight on recall
 
-In our scenario, F2-measure of negative tweets was used as an evaluation metric.
+In our scenario, F1-measure was used. Since the data was imbalanced and the interest was in learning the feelings about the products, all classes were equally important. For evaluation, macro-F1 score was chosen. It was computed by taking the arithmetic mean of all the per-class F1 scores.
 ***
 
 ## Part I
@@ -68,46 +69,46 @@ Before building the models, the preprocessing steps as stated above were applied
 ### Multinomial Naive Bayes Model
 Multinomial Naive Bayes is one of the most popular supervised learning classifications that is used for the analysis of the categorical text data. The algorithm is based on the Bayes theorem and calculates the probability of each tag for a given sample and then gives the tag with the highest probability as output.
 
-According to the confusion matrix of the MultinomialNB model false negative values were equal to 70, while false positives values - to 230.  Since the data was imbalanced and the company aimed to minimize the number of false negatives, while false positives were also significant, beta parameter was set to 2. As the company was interested only in the negative class, the f2 score of class 2 was calculated.
+According to the confusion matrix false negative values were equal to 70, while false positives values - to 230.  Since the data was imbalanced and the company aimed to learn how people feel about the products, macro F1 score was calculated.
 
-The MultinomialNB model’s ability to both capture negative Tweets and be accurate with those Tweets for the negative class specifically was only 44%. The model also correctly identified if a Tweet was negative about 59% of the time.
+Thus, the MultinomialNB model’s ability to both capture Tweets and be accurate with those Tweets was only 52%. The model also correctly identified Tweets as positive or negative about 59% of the time.
 
 ### Logistic Regression Model
 The LogisticRegression class was configured for multinomial logistic regression by setting the “multi_class” argument to “multinomial” and the “solver” argument to a solver that supported multinomial logistic regression - “lbfgs“.
 
-The number of FNs for the Logistic Regression model constituted 78, while the number of FPs - 140. The Logistic Regression model’s ability to both capture precision and recall for the negative class specifically got a little higher (45)%. The model also correctly identified if a Tweet was negative about 64% of the time. Thus, Logistic Regression performed a little better that MultinomialNB.
+The number of FNs constituted 78, while the number of FP - 140. The Logistic Regression model’s ability to both capture precision and recall got a little higher (57)%. The model also correctly identified a Tweet about 64% of the time. Thus, Logistic Regression performed a little better that MultinomialNB.
 
 #### Tuned Logistic Regression Model ('C': 0, 'max_iter': 100, 'penalty': 'none')
-The Logistic Regression model was tuned to check if it could perform any better. It turned out, that the tuned model with the parameters 'C' equal to 0, 'max_iter' equal to 100, and 'penalty' equal to 'none', performed worse than the baseline model. It had 97 FNs and 60 FPs. Also, the abiliy to capture both precision and recall for the negative class constituted only 38%, while the accuracy of the model decreased to 63%.
+The Logistic Regression model was tuned to check if it could perform any better. It turned out, that the tuned model with the parameters 'C' equal to 0, 'max_iter' equal to 100, and 'penalty' equal to 'none', performed worse than the baseline model. It had 97 FNs and 60 FPs. Also, the abiliy to capture both precision and recall constituted only 55%, while the accuracy of the model decreased to 63%.
 
 #### K-Nearest Neighbors Model
 KNN is a super simple algorithm, which assumes that similar things are in close proximity of each other. So if a datapoint is near to another datapoint, it assumes that they both belong to similar classes. 
 
-The results of the KNN model were not great. It had 80 FNs and 207 FPs. The F score constituted only 40%, meaning that the model could capture precision and recall of the negative class only 40% of the time. The accuracy of the model was only 56%. The model was tuned to check if it could perform better.
+The results of the KNN model were not great. It had 80 FNs and 207 FPs. The F score constituted only 48%, meaning that the model could capture precision and recall only 48% of the time. The accuracy of the model was only 56%. The model was tuned to check if it could perform better.
 
 #### Tuned K-Nearest Neighbors Model ('metric': 'manhattan', 'n_neighbors': 5, 'weights': 'distance')
-The F score of the Tuned KNN model was the lowest among all the previous models and constituted only 30%. The number of FNs increased to 110 and FPs decreased to 49. The accuracy of the model was equal to 63%.
+The F score of the Tuned KNN model constituted 50%. The number of FNs increased to 110 and FPs decreased to 49. The accuracy of the model was equal to 63%.
 
 #### Support Vector Machine Model
 The multiclassification problem was broken down into multiple binary classification problems using 'one-to-one' approach. The idea was to map data points to high dimensional space to gain mutual linear separation between every two classes, or in other words to get a binary classifier per each pair of classes.
 
-Although the accuracy score of the SVM model was the highest (68%), the F score decreased to 27%. The number of FNs constituted 116 and FPs - only 20. Definitely, this model didn't perform well enough. The model was tuned to check if it could perform any better. 
+Although the accuracy score of the SVM model was the highest (68%), the F score was equal to 55%. The number of FNs constituted 116 and FPs - only 20. The model was tuned to check if it could perform any better. 
 
 #### Tuned Support Vector Machine Model ('C': 10, 'gamma': 3)
-The tuned SVM model performed even worse. Although the accuracy was 65%, the F score decreased to 21%. The number of FNs increased to 124, while the number of FPs was the lowest among all the models (15).
+The tuned SVM model performed even worse. Although the accuracy was 65%, the F score decreased to 48%. The number of FNs increased to 124, while the number of FPs was the lowest among all the models (15).
 
 #### Random Forest Model
 A random forest is an ensemble classifier that estimates based on the combination of different decision trees. Effectively, it fits a number of decision tree classifiers on various subsamples of the dataset. Also, each tree in the forest is built on a random best subset of features. Finally, the act of enabling these trees gives the best subset of features among all the random subsets of features. 
 
-The F score of the Random Forest model was not great at all. It was equal only to 27%. The accuracy of the model constituted 67%. The number of FNs was also high (116), while FPs were only 17 for the negative class. The model was tuned to check if it could perform any better.
+The F score of the Random Forest model was equal to 55%. The accuracy of the model constituted 67%. The number of FNs was also high (116), while FPs were only 17 for the negative class. The model was tuned to check if it could perform any better.
 
 #### Tuned Random Forest Model ('criterion': 'entropy', 'max_features': 'log2', 'n_estimators': 150)
-The F score for the negative class of the tuned model was 27% as well, while the accuracy constituted 68%. The number of FNs was equal to 115, while the number of FPs - to 16 only.
+The F score of the tuned model was 55% as well, while the accuracy constituted 68%. The number of FNs was equal to 115, while the number of FPs - to 16 only.
 ***
 
 ### Model Evaluation
 The graph with the F scores of different models was plotted. Since it was more important to correctly label an instance as a negative class, the model that produced a better F score on the negative class was selected. It was found out that the best F score belonged to the Logistic Regression model. The classification report of the mentioned model and the F score for the negative class were generated again.
 
-![](Images/fscore.png)
+![](Images/fscroe.png)
 
-Based on the report, it was determined that the model correctly identifies if a Tweet will be negative about 64% of the time. The F score value for the negative class of the model is 45%, meaning that the model's balanced ability to both capture negative Tweets (recall) and be accurate with those Tweets (precision) is only 45%. The results were not perfect and neural networks were tried out.
+Based on the report, it was determined that the model correctly identifies a Tweet about 64% of the time. The F score value for the model is 57%, meaning that the model's balanced ability to both capture Tweets (recall) and be accurate with those Tweets (precision) is only 57%. The results were not perfect and neural networks were tried out.
